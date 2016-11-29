@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Welcome</title>
+    <link href="/stylesheets/bootstrap.css" rel="stylesheet">
+    <link href="/stylesheets/style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src='/javascripts/bootstrap.js' rel="javascripts"></script>
+    <script>
+     $( document ).ready(function() {
+        $('#messages').fadeIn('fast').delay(2000).fadeOut('fast');
+        $("#register").on("click", function(){
+            //alert($('#dselect :selected').text());
+            //alert($('#application'));
+            var arr = [];
+            $(".bhj").each(function(){
+
+                arr.push($(this).val());
+            });
+            var userId = arr[0];
+            var ind = $('#dselect :selected').index() + 1;
+            var workflowId = arr[ind];
+            // var files = $(this).get(0).files;
+            var files = $("#application")[0].files;
+            if (files.length > 0){
+                $("#fuserid").val(userId);
+                $('#fworkflowid').val(workflowId);
+                //var data = {'userId': userId, 'workflowId': workflowId, 'file': files[0]['name']}
+                // alert(data);
+                // $.ajax({
+                //     type: "POST",
+                //     enctype: 'multipart/form-data',
+                //     url: "/users/uploadApplication",
+                //     data: data,
+                //     async: true
+                // })
+            }
+            else{
+                alert('No file selected');
+            }
+    });
+            //
+            // var arr = [];
+            // var get_level = $(".get").val();
+            // var workflowname = $('#wfname').val();
+            // $(".users").each(function(){
+            //     arr.push($(this).val());
+            // });
+            // var data = {'workflowname':workflowname, 'totallevels': get_level, arr};
+            // console.log(data);
+            // console.log(arr);
+            // $.ajax({
+            //     type: "POST",
+            //     url: "/admin/register",
+            //     data: data,
+            // })
+            // <div class="form-group"><label>Name</label><input class="form-control" name="name" type="text" placeholder="Enter Name"></div>
+            // <div class="form-group"><label>Email</label><input class="form-control" name="email" type="email" placeholder="Enter Email"></div>
+            // <div class="form-group"><label>Username</label><input class="form-control" name="username" type="text" placeholder="Enter Username"></div>
+            // <div class="form-group"><label>Password</label><input class="form-control" name="password" type="password" placeholder="Enter Password"></div>
+            // <div class="form-group"><label>Confirm Password</label><input class="form-control" name="password2" type="password" placeholder="Confirm Password"></div>
+    })
+     </script>
+  </head>
+  <body>
+      <%- messages() %>
+    <div role="navigation" class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="#" class="navbar-brand">Approval Managment System</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+              <i img src="/images/notification.png" class="fa fa-bell" style="font-size: 1.65em;"></i>
+              <li><a href="#"><%=user%></a></li>
+              <li><a href="/users/logout">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="sidebar-nav">
+          <div class="navbar navbar-default" role="navigation">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <span class="visible-xs navbar-brand">Sidebar menu</span>
+            </div>
+            <div class="navbar-collapse collapse sidebar-navbar-collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="/">File New Application</a></li>
+                <li class="active"><a href="/users/pending">Pending Applications <span class="badge"><%=pendingapplications.length%></span></a></li>
+                <li><a href="/users/approved">Approved Applications <span class="badge"><%=approvedapplications.length%></span></a></li>
+                <!-- <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="#">Action</a></li>
+                    <li><a href="#">Another action</a></li>
+                    <li><a href="#">Something else here</a></li>
+                    <li class="divider"></li>
+                    <li class="dropdown-header">Nav header</li>
+                    <li><a href="#">Separated link</a></li>
+                    <li><a href="#">One more separated link</a></li>
+                  </ul>
+                </li> -->
+                <li><a href="/users/forapproval">Applications for approval <span class="badge"><%=approvalapplications.length%></span></a></li>
+                <li><a href="/users/reviews">Reviews <span class="badge"><%=reviewapplications.length%></span></a></li>
+              </ul>
+            </div><!--/.nav-collapse -->
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-9">
+            <!-- Below are the applications which are pending, they are nor approved neither rejected. -->
+            <% for(var i=0; i<pendingapplications.length; i++) { %>
+                <div class="card">
+                    <h3><%= pendingapplications[i].workflowname%></h3>
+                    <p> Application is at level <%= pendingapplications[i].currentLevel + 1%></p>
+                    <p> <%=pendingapplications[i].levels[pendingapplications[i].currentLevel]%> has not approved your application </p>
+                    <p><a href = "/users/download/<%=pendingapplications[i].uploadId%>" > Download Application </a></p>
+                </div>
+            <% } %>
+            <!-- <div class="card">
+                <h2>This is ao card!</h2>
+                <p>In essence, a card is just a rectangular region which contains content.  This content could be text, images, lists, etc... The card UI methaphor dictates the interaction and layout of these regions.</p>
+            </div>
+            <div class="card">
+                <h2>This is hh card!</h2>
+                <p>In essence, a card is just a rectangular region which contains content.  This content could be text, images, lists, etc... The card UI methaphor dictates the interaction and layout of these regions.</p>
+            </div> -->
+      </div>
+</div>
+
+  </body>
+</html>

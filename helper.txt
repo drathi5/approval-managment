@@ -1,0 +1,227 @@
+This document will help in understanding some basic node fundamentals.
+
+In express we use middlewares.
+Middlewares are functions executed in the middle after
+the input/source then produces an output which could be
+the final output or could be used by the next middleware
+until the cycle is complete.
+Middleware allows you to define a stack of actions that you should flow through.
+Express servers themselves are a stack of middlewares.
+When you call app.use(), you pass in a function to handle requests.
+
+NOTE: As requests come in, Express goes through all of the functions in order until the request is handled.
+
+So whatever you write in app.use() is taken care when request comes
+Ex - you use
+app.use(bodyParser.json());
+/*bodyParser.json() gives your app the ability to parse JSON.
+This is necessary for when you're sending data
+(which you probably will with a JavaScript application) in JSON format.*/
+
+app.use(bodyParser.urlencoded({extended: false}));
+/*bodyParser.urlencoded({ extended: false }) allows your app to read data from URLs (GET requests).
+Extended is true by default but you'll need the querystring module.*/
+
+So now if a request comes if it is of type json we have our middleware to use it
+or whether we need to parse url we have our middleware for that too.
+
+----------------------------------------------------------------------------------------------
+
+So now in express we have following file system
+( bin dicetory in linux stores all binary exectuables)
+The bin\ directory serve as a location where you can define your various startup scripts, the www is an example on how it should looks like, ultimately you could have startup script like test, stop or restart etc. Having this structure allows you to have different configurations without touching the app.js.
+public folder will contain static files like images, css, etc.
+node modules contains all the dependcies you install using npm install
+views will contain the basic pages(views) you want to render
+|--bin
+|   -www
+|--node modules
+|--public
+|--controllers
+|--models
+|--routes
+|--views
+
+----------------------------------------------------------------------------------------------
+
+Basic Login System
+
+In this we will use passport js
+Passport.js is a flexible authentication middleware (allowing users to log in)
+that can be fully customised and works great with connect/express.
+
+It has different authentication strategies ( Google+, twitter, fb ,etc.)
+We will use local strategy, The Local Strategy allows us to authenticate users
+by looking up their data in the app's database.
+
+I have to figure out how to use Coludant , until then I am using Mongo
+So mongoose is the default connector to mongo db.
+
+----------------------------------------------------------------------------------------------
+
+Let us first go to routes
+When we create a express router we have 5 basic options
+1. get() to data by a url get request
+2. put() to update data
+3. post() to post data on server
+4. delete()
+5. all()
+
+Now all these functions are put in requestHandlers(controllers) in one file and exported in our
+router.
+
+In our router we map our request to our request handlers and export our router as a module.
+
+Code of passport js ( serialize and deserialize) will remian in user route as we want to protect
+user route from unwanted acess.
+
+-------------------------------------------------------------------------------------------------
+
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
+   // where is this user.id going? Are we supposed to access this anywhere?
+});
+// used to deserialize the user
+passport.deserializeUser(function(id, done) {
+    User.findById(id, function(err, user) {
+        done(err, user);
+    });
+});
+
+The user id (you provide as the second argument of the done function) is saved
+in the session and is later used to retrieve the whole object via the deserializeUser function.
+serializeUser determines, which data of the user object should be stored in the session.
+The result of the serializeUser method is attached to the session as
+req.session.passport.user = {}.
+Here for instance, it would be (as we provide the user id as the key)
+req.session.passport.user = {id:'xyz'}
+
+We are calling passport.deserializeUser right after it where does it fit in the workflow?
+
+The first argument of deserializeUser corresponds to the key of the user object that was
+given to the done function (see 1.). So your whole object is retrieved with help of that key.
+That key here is the user id (key can be any key of the user object i.e. name,email etc).
+In deserializeUser that key is matched with the in memory array / database or any data resource.
+
+The fetched object is attached to the request object as req.user
+
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
+                 |
+});              |
+                 |
+                 |____________________> saved to session req.session.passport.user = {id:'..'}
+                                   |
+passport.deserializeUser(function(id, done) {
+                  ________________|
+                  |
+    User.findById(id, function(err, user) {
+        done(err, user);
+                   |______________>user object attaches to the request as req.user
+
+ });
+  });
+
+
+-------------------------------------------------------------------------------------------
+Now we need to do something with the data we got.
+  router.get('/show/:category', function(req, res, next) {
+	var posts = db.get('posts');
+
+	posts.find({category: req.params.category},{},function(err, posts){
+		res.render('index',{
+  			'title': req.params.category,
+  			'posts': posts
+  		});
+	});
+});
+
+First of all we need a connection to mongolab
+our mongo uri -> mongodb://drathi5:abc123@ds047166.mlab.com:47166/swea17
+
+I am facing a issue in login , if username gets repeated
+
+
+This is code used in aqua.
+
+My find() is async , so program moves ahead while query is getting processed
+User.getUserByUsername(username, function(err, user){
+      if(err) throw err;
+      if(user){
+        console.log(user, 'gg');
+        usernameFlag = true;
+        console.log(usernameFlag);
+    }});
+
+request.flash('error', 'Username already in use');
+response.render('register',{'username': 'username already in use'});
+'register' means our register view
+
+Issue now solved by async.parallel()
+asyncTasks.push(function(callback){
+        User.getUserByEmail(email, callback);
+    })
+    asyncTasks.push(function(callback){
+        User.getUserByUsername(username, callback);
+    })
+callback is automatically passed by async
+alternate way
+asyncTasks.push(fucntion(callback){
+    User.getUserByUsername(username, function(err, user){
+        if(err)
+            callback(err, NULL);
+        if(user)
+            callback(NULL, user);
+    })
+})
+callback() is necessary as ...........
+async.parallel(asyncTasks, function(err, result){
+        // All tasks are done now
+        if(err)
+            throw err;
+        else
+        {
+            if(result[0])
+                emailFlag = true;
+            if(result[1])
+                usernameFlag = true;
+        }
+        if(errors || emailFlag || usernameFlag)
+        {
+           if(emailFlag){
+               request.flash('error', 'Email already in use');
+               response.render('register',{'email': 'email already in use'});
+           }
+           else if(usernameFlag){
+               request.flash('error', 'Username already in use');
+               response.render('register',{'username': 'username already in use'});
+           }
+           else
+           {
+               response.render('register', { errors: errors });
+           }
+        }
+        else
+        {
+               var newUser = new User({
+                name: name,
+                email: email,
+                username: username,
+                password: password,
+                profileimage: profileimage
+              });
+
+              User.createUser(newUser, function(err, user){
+                if(err) throw err;
+                // console.log(user);
+              });
+
+              request.flash('success', 'You are now registered and can login');
+
+              response.location('/');
+              response.redirect('/');
+         }
+    });
+    });
+
+-----------------------------------------------------------------------------------------------------

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Welcome</title>
+    <link href="/stylesheets/bootstrap.css" rel="stylesheet">
+    <link href="/stylesheets/style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/javascripts/bootstrap.js"></script>
+</head>
+
+<body>
+    <%- messages() %>
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container">
+            <div class="navbar-header"><button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a class="navbar-brand" href="/">Approval Managment System</a></div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/admin/register">Register New Workflow</a></li>
+                    <li><a href="/admin/edit">Edit Workflow</a></li>
+                    <li><a href="/admin/delete">Delete A Workflow</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right"></ul>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h2 class="page-header">Delete</h2>
+        <p>Please register using the form below</p>
+        <script>alert('This feature is still under construction')</script>
+        <form  onclick="alert('Sorry we couldn't finish this feature')" enctype="multipart/form-data">
+            <div class="form-group"><label>Workflow Name</label><input class="form-control" name="name" type="text" placeholder="Enter Workflow Name"></div><input class="btn btn-primary" type="submit" name="submit" value="Delete Workflow"></form>
+    </div>
+</body>
+
+</html>

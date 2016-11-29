@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Welcome</title>
+    <link href="/stylesheets/bootstrap.css" rel="stylesheet">
+    <link href="/stylesheets/style.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src='/javascripts/bootstrap.js' rel="javascripts"></script>
+    <script>
+    $( document ).ready(function()
+    {
+        console.log('gg');
+        $.get('/users',function(user){
+             console.log(user);
+         });
+    })
+    </script>
+  </head>
+  <body>
+      <%- messages() %>
+    <div role="navigation" class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="#" class="navbar-brand">Approval Managment System</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/users/register">Register</a></li>
+            <li><a href="/users/login">Login</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+              <li><a href="/users/logout">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+        <p>Welcome to the members area
+            <p>Please select a approval layout from a layout below</p>
+        <hr/>
+        <input name="submit" type="submit" value="Save" class="btn btn-default" id="submit"/>
+        </p>
+    </div>
+  </body>
+</html>
